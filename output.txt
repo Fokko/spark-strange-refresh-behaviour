@@ -1,0 +1,295 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.5.2, pytest-2.9.2, py-1.4.31, pluggy-0.3.1
+rootdir: /Users/fokkodriesprong/Desktop/spark-strange-refresh-behaviour, inifile: 
+plugins: cov-2.2.1
+collected 3 items
+
+run.py F..
+
+=================================== FAILURES ===================================
+___________________________________ test_sql ___________________________________
+
+sql_context = <pyspark.sql.context.HiveContext object at 0x108b18dd8>
+
+    def test_sql(sql_context):
+        SCHEMA = StructType([
+            StructField('name', StringType(), False),
+            StructField('age', IntegerType(), False),
+            StructField('country', StringType(), False)
+        ])
+    
+        sql_context.sql('DROP TABLE IF EXISTS {0}'.format(TABLE_NAME));
+        sql_create = """
+        CREATE TABLE {0} (
+          name    STRING,
+          age     INT,
+          country STRING
+        ) STORED AS PARQUET
+        """.format(TABLE_NAME)
+        sql_context.sql(sql_create)
+    
+        (sql_context
+            .createDataFrame([('Piter', 19, 'FRL')], SCHEMA)
+            .write
+>           .saveAsTable(TABLE_NAME, format='parquet', mode='append'))
+
+run.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../spark/dist/python/pyspark/sql/readwriter.py:435: in saveAsTable
+    self._jwrite.saveAsTable(name)
+/Users/fokkodriesprong/spark/dist/python/lib/py4j-0.9-src.zip/py4j/java_gateway.py:813: in __call__
+    answer, self.gateway_client, self.target_id, self.name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = ('xro36', <py4j.java_gateway.GatewayClient object at 0x10ac9a400>, 'o35', 'saveAsTable')
+kw = {}
+s = 'org.apache.spark.sql.AnalysisException: Specified partition columns () do not match the partition columns of the table. Please use (country) as the partition columns.;'
+stackTrace = 'org.apache.spark.sql.execution.datasources.PreWriteCheck.failAnalysis(rules.scala:106)\n\t at org.apache.spark.sql.ex...nd.java:79)\n\t at py4j.GatewayConnection.run(GatewayConnection.java:209)\n\t at java.lang.Thread.run(Thread.java:745)'
+
+    def deco(*a, **kw):
+        try:
+            return f(*a, **kw)
+        except py4j.protocol.Py4JJavaError as e:
+            s = e.java_exception.toString()
+            stackTrace = '\n\t at '.join(map(lambda x: x.toString(),
+                                             e.java_exception.getStackTrace()))
+            if s.startswith('org.apache.spark.sql.AnalysisException: '):
+>               raise AnalysisException(s.split(': ', 1)[1], stackTrace)
+E               pyspark.sql.utils.AnalysisException: 'Specified partition columns () do not match the partition columns of the table. Please use (country) as the partition columns.;'
+
+../../spark/dist/python/pyspark/sql/utils.py:51: AnalysisException
+---------------------------- Captured stderr setup -----------------------------
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+16/07/11 15:17:52 INFO SparkContext: Running Spark version 1.6.1
+16/07/11 15:17:52 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+16/07/11 15:17:52 INFO SecurityManager: Changing view acls to: fokkodriesprong
+16/07/11 15:17:52 INFO SecurityManager: Changing modify acls to: fokkodriesprong
+16/07/11 15:17:52 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(fokkodriesprong); users with modify permissions: Set(fokkodriesprong)
+16/07/11 15:17:52 INFO Utils: Successfully started service 'sparkDriver' on port 49745.
+16/07/11 15:17:53 INFO Slf4jLogger: Slf4jLogger started
+16/07/11 15:17:53 INFO Remoting: Starting remoting
+16/07/11 15:17:53 INFO Remoting: Remoting started; listening on addresses :[akka.tcp://sparkDriverActorSystem@192.168.99.1:49746]
+16/07/11 15:17:53 INFO Utils: Successfully started service 'sparkDriverActorSystem' on port 49746.
+16/07/11 15:17:53 INFO SparkEnv: Registering MapOutputTracker
+16/07/11 15:17:53 INFO SparkEnv: Registering BlockManagerMaster
+16/07/11 15:17:53 INFO DiskBlockManager: Created local directory at /private/var/folders/dm/5qvjnrpx4m92318vwt4svfsh0000gn/T/blockmgr-0d1e6151-0a55-4f5a-b8e5-1b739b730587
+16/07/11 15:17:53 INFO MemoryStore: MemoryStore started with capacity 511.1 MB
+16/07/11 15:17:53 INFO SparkEnv: Registering OutputCommitCoordinator
+16/07/11 15:17:53 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+16/07/11 15:17:53 INFO SparkUI: Started SparkUI at http://192.168.99.1:4040
+16/07/11 15:17:53 INFO Executor: Starting executor ID driver on host localhost
+16/07/11 15:17:53 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 49747.
+16/07/11 15:17:53 INFO NettyBlockTransferService: Server created on 49747
+16/07/11 15:17:53 INFO BlockManagerMaster: Trying to register BlockManager
+16/07/11 15:17:53 INFO BlockManagerMasterEndpoint: Registering block manager localhost:49747 with 511.1 MB RAM, BlockManagerId(driver, localhost, 49747)
+16/07/11 15:17:53 INFO BlockManagerMaster: Registered BlockManager
+----------------------------- Captured stderr call -----------------------------
+16/07/11 15:17:54 INFO HiveContext: Initializing execution hive, version 1.2.1
+16/07/11 15:17:54 INFO ClientWrapper: Inspected Hadoop version: 2.6.0
+16/07/11 15:17:54 INFO ClientWrapper: Loaded org.apache.hadoop.hive.shims.Hadoop23Shims for Hadoop version 2.6.0
+16/07/11 15:17:54 INFO HiveMetaStore: 0: Opening raw store with implemenation class:org.apache.hadoop.hive.metastore.ObjectStore
+16/07/11 15:17:54 INFO ObjectStore: ObjectStore, initialize called
+16/07/11 15:17:54 INFO Persistence: Property hive.metastore.integral.jdo.pushdown unknown - will be ignored
+16/07/11 15:17:54 INFO Persistence: Property datanucleus.cache.level2 unknown - will be ignored
+16/07/11 15:17:54 WARN Connection: BoneCP specified but not present in CLASSPATH (or one of dependencies)
+16/07/11 15:17:54 WARN Connection: BoneCP specified but not present in CLASSPATH (or one of dependencies)
+16/07/11 15:17:55 INFO ObjectStore: Setting MetaStore object pin classes with hive.metastore.cache.pinobjtypes="Table,StorageDescriptor,SerDeInfo,Partition,Database,Type,FieldSchema,Order"
+16/07/11 15:17:56 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MFieldSchema" is tagged as "embedded-only" so does not have its own datastore table.
+16/07/11 15:17:56 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MOrder" is tagged as "embedded-only" so does not have its own datastore table.
+16/07/11 15:17:56 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MFieldSchema" is tagged as "embedded-only" so does not have its own datastore table.
+16/07/11 15:17:56 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MOrder" is tagged as "embedded-only" so does not have its own datastore table.
+16/07/11 15:17:56 INFO MetaStoreDirectSql: Using direct SQL, underlying DB is DERBY
+16/07/11 15:17:56 INFO ObjectStore: Initialized ObjectStore
+16/07/11 15:17:56 WARN ObjectStore: Version information not found in metastore. hive.metastore.schema.verification is not enabled so recording the schema version 1.2.0
+16/07/11 15:17:56 WARN ObjectStore: Failed to get database default, returning NoSuchObjectException
+16/07/11 15:17:56 INFO HiveMetaStore: Added admin role in metastore
+16/07/11 15:17:56 INFO HiveMetaStore: Added public role in metastore
+16/07/11 15:17:56 INFO HiveMetaStore: No user is added in admin role, since config is empty
+16/07/11 15:17:57 INFO HiveMetaStore: 0: get_all_databases
+16/07/11 15:17:57 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=get_all_databases	
+16/07/11 15:17:57 INFO HiveMetaStore: 0: get_functions: db=default pat=*
+16/07/11 15:17:57 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=get_functions: db=default pat=*	
+16/07/11 15:17:57 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MResourceUri" is tagged as "embedded-only" so does not have its own datastore table.
+16/07/11 15:17:57 INFO SessionState: Created local directory: /var/folders/dm/5qvjnrpx4m92318vwt4svfsh0000gn/T/392b6b59-fdae-4e52-90e2-78ecf1fc03ae_resources
+16/07/11 15:17:57 INFO SessionState: Created HDFS directory: /tmp/hive/fokkodriesprong/392b6b59-fdae-4e52-90e2-78ecf1fc03ae
+16/07/11 15:17:57 INFO SessionState: Created local directory: /var/folders/dm/5qvjnrpx4m92318vwt4svfsh0000gn/T/fokkodriesprong/392b6b59-fdae-4e52-90e2-78ecf1fc03ae
+16/07/11 15:17:57 INFO SessionState: Created HDFS directory: /tmp/hive/fokkodriesprong/392b6b59-fdae-4e52-90e2-78ecf1fc03ae/_tmp_space.db
+16/07/11 15:17:57 INFO HiveContext: default warehouse location is /user/hive/warehouse
+16/07/11 15:17:57 INFO HiveContext: Initializing HiveMetastoreConnection version 1.2.1 using Spark classes.
+16/07/11 15:17:57 INFO ClientWrapper: Inspected Hadoop version: 2.6.0
+16/07/11 15:17:57 INFO ClientWrapper: Loaded org.apache.hadoop.hive.shims.Hadoop23Shims for Hadoop version 2.6.0
+16/07/11 15:17:57 INFO HiveMetaStore: 0: Opening raw store with implemenation class:org.apache.hadoop.hive.metastore.ObjectStore
+16/07/11 15:17:57 INFO ObjectStore: ObjectStore, initialize called
+16/07/11 15:17:57 INFO Persistence: Property hive.metastore.integral.jdo.pushdown unknown - will be ignored
+16/07/11 15:17:57 INFO Persistence: Property datanucleus.cache.level2 unknown - will be ignored
+16/07/11 15:17:57 WARN Connection: BoneCP specified but not present in CLASSPATH (or one of dependencies)
+16/07/11 15:17:57 WARN Connection: BoneCP specified but not present in CLASSPATH (or one of dependencies)
+16/07/11 15:17:58 INFO ObjectStore: Setting MetaStore object pin classes with hive.metastore.cache.pinobjtypes="Table,StorageDescriptor,SerDeInfo,Partition,Database,Type,FieldSchema,Order"
+16/07/11 15:17:58 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MFieldSchema" is tagged as "embedded-only" so does not have its own datastore table.
+16/07/11 15:17:58 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MOrder" is tagged as "embedded-only" so does not have its own datastore table.
+16/07/11 15:17:59 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MFieldSchema" is tagged as "embedded-only" so does not have its own datastore table.
+16/07/11 15:17:59 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MOrder" is tagged as "embedded-only" so does not have its own datastore table.
+16/07/11 15:17:59 INFO MetaStoreDirectSql: Using direct SQL, underlying DB is DERBY
+16/07/11 15:17:59 INFO ObjectStore: Initialized ObjectStore
+16/07/11 15:17:59 WARN ObjectStore: Version information not found in metastore. hive.metastore.schema.verification is not enabled so recording the schema version 1.2.0
+16/07/11 15:17:59 WARN ObjectStore: Failed to get database default, returning NoSuchObjectException
+16/07/11 15:17:59 INFO HiveMetaStore: Added admin role in metastore
+16/07/11 15:17:59 INFO HiveMetaStore: Added public role in metastore
+16/07/11 15:17:59 INFO HiveMetaStore: No user is added in admin role, since config is empty
+16/07/11 15:17:59 INFO HiveMetaStore: 0: get_all_databases
+16/07/11 15:17:59 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=get_all_databases	
+16/07/11 15:17:59 INFO HiveMetaStore: 0: get_functions: db=default pat=*
+16/07/11 15:17:59 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=get_functions: db=default pat=*	
+16/07/11 15:17:59 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MResourceUri" is tagged as "embedded-only" so does not have its own datastore table.
+16/07/11 15:17:59 INFO SessionState: Created local directory: /var/folders/dm/5qvjnrpx4m92318vwt4svfsh0000gn/T/3eeb2ffe-554e-424d-9f16-7b7a34ef17df_resources
+16/07/11 15:17:59 INFO SessionState: Created HDFS directory: /tmp/hive/fokkodriesprong/3eeb2ffe-554e-424d-9f16-7b7a34ef17df
+16/07/11 15:17:59 INFO SessionState: Created local directory: /var/folders/dm/5qvjnrpx4m92318vwt4svfsh0000gn/T/fokkodriesprong/3eeb2ffe-554e-424d-9f16-7b7a34ef17df
+16/07/11 15:17:59 INFO SessionState: Created HDFS directory: /tmp/hive/fokkodriesprong/3eeb2ffe-554e-424d-9f16-7b7a34ef17df/_tmp_space.db
+16/07/11 15:18:00 INFO ParseDriver: Parsing command: DROP TABLE IF EXISTS people
+16/07/11 15:18:01 INFO ParseDriver: Parse Completed
+16/07/11 15:18:01 INFO HiveMetaStore: 0: get_table : db=default tbl=people
+16/07/11 15:18:01 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=get_table : db=default tbl=people	
+16/07/11 15:18:01 INFO PerfLogger: <PERFLOG method=Driver.run from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:01 INFO PerfLogger: <PERFLOG method=TimeToSubmit from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:01 INFO PerfLogger: <PERFLOG method=compile from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:01 INFO PerfLogger: <PERFLOG method=parse from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:01 INFO ParseDriver: Parsing command: DROP TABLE IF EXISTS people
+16/07/11 15:18:02 INFO ParseDriver: Parse Completed
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=parse start=1468243081387 end=1468243082276 duration=889 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=semanticAnalyze from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO HiveMetaStore: 0: get_table : db=default tbl=people
+16/07/11 15:18:02 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=get_table : db=default tbl=people	
+16/07/11 15:18:02 INFO Driver: Semantic Analysis Completed
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=semanticAnalyze start=1468243082278 end=1468243082345 duration=67 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO Driver: Returning Hive schema: Schema(fieldSchemas:null, properties:null)
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=compile start=1468243081361 end=1468243082350 duration=989 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO Driver: Concurrency mode is disabled, not creating a lock manager
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=Driver.execute from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO Driver: Starting command(queryId=fokkodriesprong_20160711151801_6236e486-a1b4-44e6-bb62-fb514063b241): DROP TABLE IF EXISTS people
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=TimeToSubmit start=1468243081361 end=1468243082352 duration=991 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=runTasks from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=task.DDL.Stage-0 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO Driver: Starting task [Stage-0:DDL] in serial mode
+16/07/11 15:18:02 INFO HiveMetaStore: 0: get_table : db=default tbl=people
+16/07/11 15:18:02 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=get_table : db=default tbl=people	
+16/07/11 15:18:02 ERROR Hive: Table people not found: default.people table not found
+16/07/11 15:18:02 INFO HiveMetaStore: 0: get_table : db=default tbl=people
+16/07/11 15:18:02 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=get_table : db=default tbl=people	
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=runTasks start=1468243082353 end=1468243082372 duration=19 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=Driver.execute start=1468243082350 end=1468243082373 duration=23 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO Driver: OK
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=releaseLocks from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=releaseLocks start=1468243082373 end=1468243082373 duration=0 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=Driver.run start=1468243081361 end=1468243082373 duration=1012 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO ParseDriver: Parsing command: CREATE TABLE people (
+      name    STRING,
+      age     INT,
+      country STRING
+    ) STORED AS PARQUET
+16/07/11 15:18:02 INFO ParseDriver: Parse Completed
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=Driver.run from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=TimeToSubmit from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=compile from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=parse from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO ParseDriver: Parsing command: CREATE TABLE people (
+      name    STRING,
+      age     INT,
+      country STRING
+    ) STORED AS PARQUET
+16/07/11 15:18:02 INFO ParseDriver: Parse Completed
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=parse start=1468243082437 end=1468243082440 duration=3 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=semanticAnalyze from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO CalcitePlanner: Starting Semantic Analysis
+16/07/11 15:18:02 INFO CalcitePlanner: Creating table default.people position=13
+16/07/11 15:18:02 INFO HiveMetaStore: 0: get_database: default
+16/07/11 15:18:02 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=get_database: default	
+16/07/11 15:18:02 INFO Driver: Semantic Analysis Completed
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=semanticAnalyze start=1468243082440 end=1468243082519 duration=79 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO Driver: Returning Hive schema: Schema(fieldSchemas:null, properties:null)
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=compile start=1468243082437 end=1468243082520 duration=83 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO Driver: Concurrency mode is disabled, not creating a lock manager
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=Driver.execute from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO Driver: Starting command(queryId=fokkodriesprong_20160711151802_267d0edb-8dfb-49b5-9084-9adb7f989967): CREATE TABLE people (
+      name    STRING,
+      age     INT,
+      country STRING
+    ) STORED AS PARQUET
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=TimeToSubmit start=1468243082437 end=1468243082523 duration=86 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=runTasks from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=task.DDL.Stage-0 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO Driver: Starting task [Stage-0:DDL] in serial mode
+16/07/11 15:18:02 INFO HiveMetaStore: 0: create_table: Table(tableName:people, dbName:default, owner:fokkodriesprong, createTime:1468243082, lastAccessTime:0, retention:0, sd:StorageDescriptor(cols:[FieldSchema(name:name, type:string, comment:null), FieldSchema(name:age, type:int, comment:null), FieldSchema(name:country, type:string, comment:null)], location:null, inputFormat:org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat, outputFormat:org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat, compressed:false, numBuckets:-1, serdeInfo:SerDeInfo(name:null, serializationLib:org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe, parameters:{serialization.format=1}), bucketCols:[], sortCols:[], parameters:{}, skewedInfo:SkewedInfo(skewedColNames:[], skewedColValues:[], skewedColValueLocationMaps:{}), storedAsSubDirectories:false), partitionKeys:[], parameters:{}, viewOriginalText:null, viewExpandedText:null, tableType:MANAGED_TABLE, privileges:PrincipalPrivilegeSet(userPrivileges:{}, groupPrivileges:null, rolePrivileges:null), temporary:false)
+16/07/11 15:18:02 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=create_table: Table(tableName:people, dbName:default, owner:fokkodriesprong, createTime:1468243082, lastAccessTime:0, retention:0, sd:StorageDescriptor(cols:[FieldSchema(name:name, type:string, comment:null), FieldSchema(name:age, type:int, comment:null), FieldSchema(name:country, type:string, comment:null)], location:null, inputFormat:org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat, outputFormat:org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat, compressed:false, numBuckets:-1, serdeInfo:SerDeInfo(name:null, serializationLib:org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe, parameters:{serialization.format=1}), bucketCols:[], sortCols:[], parameters:{}, skewedInfo:SkewedInfo(skewedColNames:[], skewedColValues:[], skewedColValueLocationMaps:{}), storedAsSubDirectories:false), partitionKeys:[], parameters:{}, viewOriginalText:null, viewExpandedText:null, tableType:MANAGED_TABLE, privileges:PrincipalPrivilegeSet(userPrivileges:{}, groupPrivileges:null, rolePrivileges:null), temporary:false)	
+16/07/11 15:18:02 INFO log: Updating table stats fast for people
+16/07/11 15:18:02 INFO log: Updated size of table people to 556
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=runTasks start=1468243082523 end=1468243082640 duration=117 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=Driver.execute start=1468243082520 end=1468243082640 duration=120 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO Driver: OK
+16/07/11 15:18:02 INFO PerfLogger: <PERFLOG method=releaseLocks from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=releaseLocks start=1468243082640 end=1468243082640 duration=0 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO PerfLogger: </PERFLOG method=Driver.run start=1468243082437 end=1468243082640 duration=203 from=org.apache.hadoop.hive.ql.Driver>
+16/07/11 15:18:02 INFO HiveMetaStore: 0: get_table : db=default tbl=people
+16/07/11 15:18:02 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=get_table : db=default tbl=people	
+16/07/11 15:18:02 INFO HiveMetaStore: 0: get_table : db=default tbl=people
+16/07/11 15:18:02 INFO audit: ugi=fokkodriesprong	ip=unknown-ip-addr	cmd=get_table : db=default tbl=people	
+16/07/11 15:18:02 INFO ParquetRelation: Listing file:/user/hive/warehouse/people on driver
+16/07/11 15:18:02 INFO ParquetRelation: Listing file:/user/hive/warehouse/people/country=FRL on driver
+16/07/11 15:18:03 INFO SparkContext: Starting job: saveAsTable at NativeMethodAccessorImpl.java:-2
+16/07/11 15:18:03 INFO DAGScheduler: Got job 0 (saveAsTable at NativeMethodAccessorImpl.java:-2) with 8 output partitions
+16/07/11 15:18:03 INFO DAGScheduler: Final stage: ResultStage 0 (saveAsTable at NativeMethodAccessorImpl.java:-2)
+16/07/11 15:18:03 INFO DAGScheduler: Parents of final stage: List()
+16/07/11 15:18:03 INFO DAGScheduler: Missing parents: List()
+16/07/11 15:18:03 INFO DAGScheduler: Submitting ResultStage 0 (MapPartitionsRDD[8] at saveAsTable at NativeMethodAccessorImpl.java:-2), which has no missing parents
+16/07/11 15:18:03 INFO MemoryStore: Block broadcast_0 stored as values in memory (estimated size 61.5 KB, free 61.5 KB)
+16/07/11 15:18:03 INFO MemoryStore: Block broadcast_0_piece0 stored as bytes in memory (estimated size 20.6 KB, free 82.1 KB)
+16/07/11 15:18:03 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on localhost:49747 (size: 20.6 KB, free: 511.1 MB)
+16/07/11 15:18:03 INFO SparkContext: Created broadcast 0 from broadcast at DAGScheduler.scala:1006
+16/07/11 15:18:03 INFO DAGScheduler: Submitting 8 missing tasks from ResultStage 0 (MapPartitionsRDD[8] at saveAsTable at NativeMethodAccessorImpl.java:-2)
+16/07/11 15:18:03 INFO TaskSchedulerImpl: Adding task set 0.0 with 8 tasks
+16/07/11 15:18:03 INFO TaskSetManager: Starting task 0.0 in stage 0.0 (TID 0, localhost, partition 0,PROCESS_LOCAL, 2076 bytes)
+16/07/11 15:18:03 INFO TaskSetManager: Starting task 1.0 in stage 0.0 (TID 1, localhost, partition 1,PROCESS_LOCAL, 2076 bytes)
+16/07/11 15:18:03 INFO TaskSetManager: Starting task 2.0 in stage 0.0 (TID 2, localhost, partition 2,PROCESS_LOCAL, 2076 bytes)
+16/07/11 15:18:03 INFO TaskSetManager: Starting task 3.0 in stage 0.0 (TID 3, localhost, partition 3,PROCESS_LOCAL, 2076 bytes)
+16/07/11 15:18:03 INFO TaskSetManager: Starting task 4.0 in stage 0.0 (TID 4, localhost, partition 4,PROCESS_LOCAL, 2076 bytes)
+16/07/11 15:18:03 INFO TaskSetManager: Starting task 5.0 in stage 0.0 (TID 5, localhost, partition 5,PROCESS_LOCAL, 2076 bytes)
+16/07/11 15:18:03 INFO TaskSetManager: Starting task 6.0 in stage 0.0 (TID 6, localhost, partition 6,PROCESS_LOCAL, 2076 bytes)
+16/07/11 15:18:03 INFO TaskSetManager: Starting task 7.0 in stage 0.0 (TID 7, localhost, partition 7,PROCESS_LOCAL, 2197 bytes)
+16/07/11 15:18:03 INFO Executor: Running task 1.0 in stage 0.0 (TID 1)
+16/07/11 15:18:03 INFO Executor: Running task 5.0 in stage 0.0 (TID 5)
+16/07/11 15:18:03 INFO Executor: Running task 3.0 in stage 0.0 (TID 3)
+16/07/11 15:18:03 INFO Executor: Running task 2.0 in stage 0.0 (TID 2)
+16/07/11 15:18:03 INFO Executor: Running task 7.0 in stage 0.0 (TID 7)
+16/07/11 15:18:03 INFO Executor: Running task 6.0 in stage 0.0 (TID 6)
+16/07/11 15:18:03 INFO Executor: Running task 0.0 in stage 0.0 (TID 0)
+16/07/11 15:18:03 INFO Executor: Running task 4.0 in stage 0.0 (TID 4)
+16/07/11 15:18:03 INFO ParquetFileReader: Initiating action with parallelism: 5
+16/07/11 15:18:03 INFO ParquetFileReader: Initiating action with parallelism: 5
+16/07/11 15:18:03 INFO ParquetFileReader: Initiating action with parallelism: 5
+16/07/11 15:18:03 INFO ParquetFileReader: Initiating action with parallelism: 5
+16/07/11 15:18:03 INFO ParquetFileReader: Initiating action with parallelism: 5
+16/07/11 15:18:03 INFO ParquetFileReader: Initiating action with parallelism: 5
+16/07/11 15:18:03 INFO ParquetFileReader: Initiating action with parallelism: 5
+16/07/11 15:18:03 INFO ParquetFileReader: Initiating action with parallelism: 5
+16/07/11 15:18:03 INFO Executor: Finished task 1.0 in stage 0.0 (TID 1). 936 bytes result sent to driver
+16/07/11 15:18:03 INFO Executor: Finished task 2.0 in stage 0.0 (TID 2). 936 bytes result sent to driver
+16/07/11 15:18:03 INFO Executor: Finished task 6.0 in stage 0.0 (TID 6). 936 bytes result sent to driver
+16/07/11 15:18:03 INFO Executor: Finished task 5.0 in stage 0.0 (TID 5). 936 bytes result sent to driver
+16/07/11 15:18:03 INFO Executor: Finished task 3.0 in stage 0.0 (TID 3). 936 bytes result sent to driver
+16/07/11 15:18:03 INFO Executor: Finished task 0.0 in stage 0.0 (TID 0). 936 bytes result sent to driver
+16/07/11 15:18:03 INFO Executor: Finished task 4.0 in stage 0.0 (TID 4). 936 bytes result sent to driver
+16/07/11 15:18:03 INFO TaskSetManager: Finished task 1.0 in stage 0.0 (TID 1) in 68 ms on localhost (1/8)
+16/07/11 15:18:03 INFO TaskSetManager: Finished task 2.0 in stage 0.0 (TID 2) in 70 ms on localhost (2/8)
+16/07/11 15:18:03 INFO TaskSetManager: Finished task 6.0 in stage 0.0 (TID 6) in 68 ms on localhost (3/8)
+16/07/11 15:18:03 INFO TaskSetManager: Finished task 5.0 in stage 0.0 (TID 5) in 69 ms on localhost (4/8)
+16/07/11 15:18:03 INFO TaskSetManager: Finished task 3.0 in stage 0.0 (TID 3) in 70 ms on localhost (5/8)
+16/07/11 15:18:03 INFO TaskSetManager: Finished task 0.0 in stage 0.0 (TID 0) in 88 ms on localhost (6/8)
+16/07/11 15:18:03 INFO TaskSetManager: Finished task 4.0 in stage 0.0 (TID 4) in 70 ms on localhost (7/8)
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+16/07/11 15:18:03 INFO Executor: Finished task 7.0 in stage 0.0 (TID 7). 1701 bytes result sent to driver
+16/07/11 15:18:03 INFO TaskSetManager: Finished task 7.0 in stage 0.0 (TID 7) in 175 ms on localhost (8/8)
+16/07/11 15:18:03 INFO DAGScheduler: ResultStage 0 (saveAsTable at NativeMethodAccessorImpl.java:-2) finished in 0.201 s
+16/07/11 15:18:03 INFO TaskSchedulerImpl: Removed TaskSet 0.0, whose tasks have all completed, from pool 
+16/07/11 15:18:03 INFO DAGScheduler: Job 0 finished: saveAsTable at NativeMethodAccessorImpl.java:-2, took 0.280206 s
+===================== 1 failed, 2 passed in 18.41 seconds ======================
